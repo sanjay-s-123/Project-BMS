@@ -1,0 +1,21 @@
+{
+    "blood_inventory": {
+        "O+": 50
+    },
+    "donation_records": [
+        {
+            "blood_type": "O+",
+            "units": 100,
+            "donor_name": "Vasu",
+            "timestamp": "2026-02-24 07:36:41",
+            "type": "donation"
+        },
+        {
+            "blood_type": "O+",
+            "units": 50,
+            "recipient_name": "Vivina",
+            "timestamp": "2026-02-24 07:37:35",
+            "type": "usage"
+        }
+    ]
+}

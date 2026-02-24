@@ -1,12 +1,38 @@
 import tkinter as tk
 from tkinter import ttk, messagebox, scrolledtext
 from datetime import datetime
+import json
+import os
+
+DATA_FILE = "blood_data.json"
 
 class BloodManagementSystem:
     def __init__(self):
         self.blood_inventory = {}
         self.donation_records = []
-        
+        self._load_data()
+
+    def _load_data(self):
+        """Load inventory and records from JSON file if it exists."""
+        if os.path.exists(DATA_FILE):
+            try:
+                with open(DATA_FILE, "r") as f:
+                    data = json.load(f)
+                self.blood_inventory = data.get("blood_inventory", {})
+                self.donation_records = data.get("donation_records", [])
+            except (json.JSONDecodeError, IOError):
+                self.blood_inventory = {}
+                self.donation_records = []
+
+    def _save_data(self):
+        """Save inventory and records to JSON file."""
+        data = {
+            "blood_inventory": self.blood_inventory,
+            "donation_records": self.donation_records
+        }
+        with open(DATA_FILE, "w") as f:
+            json.dump(data, f, indent=4)
+
     def add_blood(self, blood_type, units, donor_name="Anonymous"):
         if blood_type not in ["A+", "A-", "B+", "B-", "AB+", "AB-", "O+", "O-"]:
             return False, "Invalid blood type"
@@ -27,6 +53,7 @@ class BloodManagementSystem:
             "type": "donation"
         }
         self.donation_records.append(record)
+        self._save_data()
         
         return True, f"Successfully added {units} units of {blood_type}"
     
@@ -50,6 +77,7 @@ class BloodManagementSystem:
             "type": "usage"
         }
         self.donation_records.append(record)
+        self._save_data()
         
         return True, f"Successfully removed {units} units of {blood_type}"
     
@@ -59,6 +87,7 @@ class BloodManagementSystem:
         
         units = self.blood_inventory[blood_type]
         del self.blood_inventory[blood_type]
+        self._save_data()
         return True, f"Deleted {blood_type} ({units} units removed)"
     
     def get_inventory(self):
@@ -73,7 +102,7 @@ class BloodManagementUI:
         self.root = root
         self.root.title("Blood Management System")
         self.root.geometry("900x650")
-        self.root.configure(bg="#f0f0f0")
+        self.root.configure(bg="#f2c5c5")
         
         self.bms = BloodManagementSystem()
         
